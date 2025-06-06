@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Grade 12 Physics Solver</title>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet"/>
+  <!-- Chart.js for graphing -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    /* Global Styles & Reset */
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; padding: 0;
+      font-family: 'Roboto', sans-serif;
+      background: #f7f9fc; color: #333;
+      overflow-x: hidden;
+      transition: background 0.3s, color 0.3s;
+    }
+    /* Dark mode */
+    body.dark { background: #222; color: #ddd; }
+    body.dark header { background: linear-gradient(135deg,#1a2a33,#111); color: #ddd; }
+    body.dark nav { background: #111; }
+    body.dark nav button { color: #ddd; }
+    body.dark main { background: #333; color: #ddd; box-shadow:0 6px 12px rgba(0,0,0,0.5); }
+    body.dark .result { background: #555; color: #fff; border-left:5px solid #82a1f7; }
+    body.dark #result-settings { background: #333; color: #ddd; box-shadow:0 2px 5px rgba(0,0,0,0.7); }
+    body.dark #result-settings select,
+    body.dark #result-settings input { background: #444; color: #ddd; border:1px solid #888; }
+    body.dark input, body.dark select { background: #555; color: #ddd; border:1px solid #888; }
+
+    /* Header & Nav */
+    header {
+      background: linear-gradient(135deg,#4b79a1,#283e51);
+      color: #fff; padding:1.5rem 1rem;
+      text-align:center; font-size:1.8rem; font-weight:700;
+      position:relative; box-shadow:0 4px 6px rgba(0,0,0,0.15);
+    }
+    #darkModeToggle {
+      position:absolute; top:10px; right:10px;
+      background:transparent; border:none; color:#fff;
+      cursor:pointer; font-size:1rem;
+    }
+    nav {
+      display:flex; justify-content:center;
+      background:#283e51; flex-wrap:wrap;
+      box-shadow:0 2px 4px rgba(0,0,0,0.1);
+    }
+    nav button {
+      background:transparent; border:none; color:#fff;
+      padding:1rem 1.5rem; cursor:pointer; font-size:1rem;
+      transition:background 0.3s; flex-grow:1; max-width:140px;
+    }
+    nav button:hover, nav button:focus {
+      background:rgba(255,255,255,0.15); outline:none;
+    }
+
+    /* Main Container */
+    main {
+      max-width:750px; margin:2rem auto;
+      background:#fff; border-radius:10px;
+      padding:2rem; box-shadow:0 6px 12px rgba(0,0,0,0.1);
+      position:relative; overflow:hidden;
+    }
+
+    /* Homepage */
+    #homepage { text-align:center; animation:fadeIn 0.6s ease-out; }
+
+    /* Sections */
+    .section { display:none; animation:fadeIn 0.5s ease-out; padding-top:1rem; }
+    .active { display:block; }
+
+    /* Form Elements */
+    label { display:block; margin-top:1rem; font-weight:700; }
+    input, select {
+      width:100%; padding:0.5rem; font-size:1rem;
+      border:1px solid #ccc; border-radius:5px;
+      margin-top:0.3rem; transition:border-color 0.3s;
+    }
+    input:focus, select:focus { border-color:#4b79a1; outline:none; }
+
+    button.solve-btn, button#start-btn {
+      margin-top:1.5rem;
+      background:#4b79a1; color:#fff;
+      border:none; padding:0.75rem 1.5rem; font-size:1.1rem;
+      border-radius:6px; cursor:pointer; transition:background 0.3s;
+      width:100%;
+    }
+    button.solve-btn:hover, button#start-btn:hover { background:#3a628a; }
+
+    .result {
+      margin-top:1.5rem; font-size:1.25rem;
+      background:#e6f0fa; padding:1rem;
+      border-left:5px solid #4b79a1; border-radius:5px;
+      white-space:pre-wrap; min-height:60px;
+    }
+
+    /* Toggle “Don’t Know” */
+    #dont-know-toggle {
+      margin-top:1rem; cursor:pointer;
+      color:#4b79a1; text-decoration:underline;
+      background:none; border:none; font-weight:600;
+    }
+    #dont-know-section {
+      margin-top:1rem; padding-top:1rem;
+      border-top:1px solid #ccc; display:none;
+    }
+
+    /* Graph */
+    #graphCanvas { max-width:100%; height:300px; margin-top:1rem; }
+
+    /* Bottom Panel */
+    #result-settings {
+      margin:2rem auto 0; max-width:400px;
+      background:#f0f4f8; padding:1rem; border-radius:5px;
+      box-shadow:0 2px 5px rgba(0,0,0,0.1);
+      text-align:center; font-size:0.9rem;
+    }
+    #sigfig-container { margin-top:0.5rem; display:none; }
+    #step-settings { margin-top:0.5rem; }
+
+    @keyframes fadeIn {
+      from { opacity:0; transform:translateY(5px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    Grade 12 Physics Solver
+    <button id="darkModeToggle">Dark Mode</button>
+  </header>
+
+  <!-- Homepage -->
+  <main id="homepage">
+    <h2>Welcome to the Physics Solver</h2>
+    <p>This program helps you solve problems from multiple units we have covered in the course.</p>
+    <p>By Abel Alexander</p>
+    <button id="start-btn">Start Solving Physics Problems</button>
+  </main>
+
+  <!-- App -->
+  <main id="app" style="display:none;">
+    <!-- Navigation -->
+    <nav>
+      <button onclick="showSection('kinematics')">Kinematics</button>
+      <button onclick="showSection('energy')">Energy &amp; Momentum</button>
+      <button onclick="showSection('fields')">Fields</button>
+      <button onclick="showSection('waves')">Waves</button>
+      <button onclick="showSection('modern')">Modern Physics</button>
+      <button onclick="showSection('graphing')">Graphing</button>
+      <button onclick="showSection('converter')">Converter</button>
+      <button onclick="showSection('practice')">Practice</button>
+    </nav>
+
+    <!-- Kinematics -->
+    <section id="kinematics" class="section active">
+      <h2>Kinematics Solver</h2>
+      <label for="solve-for">Solve for:</label>
+      <select id="solve-for" onchange="updateKinematicsInputs()">
+        <option value="v">Final Velocity (v)</option>
+        <option value="v0">Initial Velocity (v₀)</option>
+        <option value="a">Acceleration (a)</option>
+        <option value="t">Time (t)</option>
+        <option value="d">Displacement (d)</option>
+      </select>
+      <div id="kin-input-fields"></div>
+      <button class="solve-btn" onclick="solveKinematics()">Calculate</button>
+      <button id="dont-know-toggle" onclick="toggleDontKnow()">
+        Don't know? Enter known values and we'll try to solve.
+      </button>
+      <div id="dont-know-section">
+        <label>Initial Velocity (v₀ in m/s): <input type="number" id="dk-v0" placeholder="Leave blank if unknown"></label>
+        <label>Final Velocity (v in m/s): <input type="number" id="dk-v" placeholder="Leave blank if unknown"></label>
+        <label>Acceleration (a in m/s²): <input type="number" id="dk-a" placeholder="Leave blank if unknown"></label>
+        <label>Time (t in s): <input type="number" id="dk-t" placeholder="Leave blank if unknown"></label>
+        <label>Displacement (d in m): <input type="number" id="dk-d" placeholder="Leave blank if unknown"></label>
+        <button class="solve-btn" onclick="solveDontKnow()">Try Solve</button>
+        <div class="result" id="dk-result"></div>
+      </div>
+      <div class="result" id="kinResult"></div>
+    </section>
+
+    <!-- Energy & Momentum -->
+    <section id="energy" class="section">
+      <h2>Energy &amp; Momentum Solver</h2>
+      <label for="solve-energy">Solve for:</label>
+      <select id="solve-energy" onchange="updateEnergyInputs()">
+        <option value="ke">Kinetic Energy (KE)</option>
+        <option value="pe">Potential Energy (PE)</option>
+        <option value="p">Momentum (p)</option>
+        <option value="impulse">Impulse (J)</option>
+      </select>
+      <div id="energy-input-fields"></div>
+      <button class="solve-btn" onclick="solveEnergyMomentum()">Calculate</button>
+      <div class="result" id="energyResult"></div>
+    </section>
+
+    <!-- Fields -->
+    <section id="fields" class="section">
+      <h2>Fields Solver</h2>
+      <label for="solve-fields">Solve for:</label>
+      <select id="solve-fields" onchange="updateFieldsInputs()">
+        <option value="grav">Gravitational Force (F)</option>
+        <option value="elec">Electric Field (E)</option>
+      </select>
+      <div id="fields-input-fields"></div>
+      <button class="solve-btn" onclick="solveFields()">Calculate</button>
+      <div class="result" id="fieldsResult"></div>
+    </section>
+
+    <!-- Waves -->
+    <section id="waves" class="section">
+      <h2>Waves Solver</h2>
+      <label for="solve-waves">Solve for:</label>
+      <select id="solve-waves" onchange="updateWavesInputs()">
+        <option value="v">Wave Speed (v)</option>
+        <option value="f">Frequency (f)</option>
+        <option value="wavelength">Wavelength (λ)</option>
+      </select>
+      <div id="waves-input-fields"></div>
+      <button class="solve-btn" onclick="solveWaves()">Calculate</button>
+      <div class="result" id="wavesResult"></div>
+    </section>
+
+    <!-- Modern Physics -->
+    <section id="modern" class="section">
+      <h2>Modern Physics Solver</h2>
+      <label for="solve-modern">Solve for:</label>
+      <select id="solve-modern" onchange="updateModernInputs()">
+        <option value="rke">Relativistic Kinetic Energy (K)</option>
+        <option value="re">Rest Energy (E)</option>
+      </select>
+      <div id="modern-input-fields"></div>
+      <button class="solve-btn" onclick="solveModern()">Calculate</button>
+      <div class="result" id="modernResult"></div>
+    </section>
+
+    <!-- Graphing -->
+    <section id="graphing" class="section">
+      <h2>Graphing</h2>
+      <label for="graph-type">Graph Type:</label>
+      <select id="graph-type">
+        <option value="vt">Velocity-Time Graph</option>
+        <option value="at">Acceleration-Time Graph</option>
+        <option value="pt">Position-Time Graph</option>
+      </select>
+      <p>Enter comma-separated values for time and corresponding velocity values:</p>
+      <label>Time Values (s): <input type="text" id="graph-time" placeholder="e.g., 0,1,2,3"></label>
+      <label>Velocity Values (m/s): <input type="text" id="graph-value" placeholder="e.g., 0,5,10,15"></label>
+      <button class="solve-btn" onclick="plotGraph()">Plot Graph</button>
+      <canvas id="graphCanvas"></canvas>
+    </section>
+
+    <!-- Converter -->
+    <section id="converter" class="section">
+      <h2>Unit Converter</h2>
+      <label for="conversion-type">Conversion Category:</label>
+      <select id="conversion-type" onchange="updateConverterInputs()">
+        <option value="speed">Speed (km/hr ↔ m/s)</option>
+        <option value="distance">Distance (km, m, mi, ft)</option>
+        <option value="temperature">Temperature (°C, °F, K)</option>
+        <option value="energy">Energy (J, eV, cal, Wh)</option>
+        <option value="mass">Mass (kg, lb, g, oz)</option>
+        <option value="volume">Volume (L, m³, gal)</option>
+        <option value="pressure">Pressure (kPa, atm, psi)</option>
+        <option value="force">Force (N, kgf)</option>
+        <option value="power">Power (W, hp)</option>
+        <option value="area">Area (m², ft², km², mi²)</option>
+      </select>
+      <div id="converter-input-fields"></div>
+      <button class="solve-btn" onclick="performConversion()">Convert</button>
+      <div class="result" id="converterResult"></div>
+    </section>
+
+    <!-- Practice -->
+    <section id="practice" class="section">
+      <h2>Practice Mode / Quiz</h2>
+      <label for="practice-category">Select Unit:</label>
+      <select id="practice-category">
+        <option value="kinematics">Kinematics</option>
+        <option value="energy">Energy &amp; Momentum</option>
+        <option value="fields">Fields</option>
+        <option value="waves">Waves</option>
+        <option value="modern">Modern Physics</option>
+      </select>
+      <button class="solve-btn" onclick="generatePracticeProblem()">Generate Practice Problem</button>
+      <div id="practice-problem" style="margin-top:1rem;"></div>
+      <label>Your Answer: <input type="number" id="practice-answer"></label>
+      <button class="solve-btn" onclick="checkPracticeAnswer()">Submit Answer</button>
+      <div class="result" id="practice-result"></div>
+    </section>
+
+    <!-- Bottom Panel -->
+    <div id="result-settings">
+      <label for="result-format">Result Format:</label>
+      <select id="result-format" onchange="updateFormatSettings()">
+        <option value="decimal">Decimal (2 dp)</option>
+        <option value="sigfig">Significant Figures</option>
+      </select>
+      <div id="sigfig-container">
+        <label for="num-sigfigs">
+          Number of Significant Figures:
+          <input type="number" id="num-sigfigs" value="3" min="1" style="width: 60px;">
+        </label>
+      </div>
+      <!-- STEP-BY-STEP WRAPPER -->
+      <div id="step-settings">
+        <label>
+          <input type="checkbox" id="show-steps" onchange="toggleStepExplanation()">
+          Include Step-by-Step Explanation
+        </label>
+      </div>
+    </div>
+  </main>
+
+  <!-- JavaScript -->
+  <script>
+    // Globals
+    let resultFormat = "decimal";
+    let chart, includeSteps = false;
+    let currentProblem = {};
+
+    // Format Settings
+    function updateFormatSettings() {
+      resultFormat = document.getElementById("result-format").value;
+      document.getElementById("sigfig-container").style.display =
+        (resultFormat === "sigfig") ? "block" : "none";
+    }
+    function toggleStepExplanation() {
+      includeSteps = document.getElementById("show-steps").checked;
+    }
+    function formatNumber(num) {
+      if (isNaN(num)) return "NaN";
+      if (resultFormat === "decimal") return parseFloat(num).toFixed(2);
+      const sig = parseInt(document.getElementById("num-sigfigs").value) || 3;
+      return parseFloat(num).toPrecision(sig);
+    }
+
+    // Dark Mode
+    document.getElementById("darkModeToggle").onclick = () => {
+      document.body.classList.toggle("dark");
+      document.getElementById("darkModeToggle").innerText =
+        document.body.classList.contains("dark") ? "Light Mode" : "Dark Mode";
+    };
+
+    // Start Button
+    document.getElementById("start-btn").onclick = () => {
+      document.getElementById("homepage").style.animation = "fadeOut 0.5s forwards";
+      setTimeout(() => {
+        document.getElementById("homepage").style.display = "none";
+        document.getElementById("app").style.display      = "block";
+      }, 500);
+    };
+
+    // showSection (hides step-settings on converter/practice)
+    function showSection(id) {
+      // Activate Tab
+      document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
+      document.getElementById(id).classList.add("active");
+
+      // Clear Results
+      ["kinResult","dk-result","energyResult","fieldsResult",
+       "wavesResult","modernResult","converterResult","practice-result"
+      ].forEach(i => document.getElementById(i).innerText = "");
+      document.getElementById("practice-problem").innerText = "";
+
+      // Bottom Panel Visibility
+      document.getElementById("result-settings").style.display =
+        (id === "graphing") ? "none" : "block";
+
+      // Hide/Reset Step Settings in Converter & Practice
+      const stepDiv = document.getElementById("step-settings");
+      if (id === "converter" || id === "practice") {
+        stepDiv.style.display = "none";
+        document.getElementById("show-steps").checked = false;
+        includeSteps = false;
+      } else {
+        stepDiv.style.display = "block";
+      }
+
+      // Init Inputs
+      if (id==="kinematics") updateKinematicsInputs();
+      if (id==="energy")      updateEnergyInputs();
+      if (id==="fields")      updateFieldsInputs();
+      if (id==="waves")       updateWavesInputs();
+      if (id==="modern")      updateModernInputs();
+      if (id==="converter")   updateConverterInputs();
+      // practice needs no init beyond clearing
+    }
+
+    /////////////////////////////
+    // Kinematics
+    /////////////////////////////
+    function updateKinematicsInputs() {
+      const solveFor = document.getElementById("solve-for").value;
+      const div = document.getElementById("kin-input-fields");
+      div.innerHTML = "";
+      const vars = ["v0","v","a","t","d"].filter(v=>v!==solveFor);
+      const names = {
+        v0:"Initial Velocity (m/s)",
+        v: "Final Velocity (m/s)",
+        a: "Acceleration (m/s²)",
+        t: "Time (s)",
+        d: "Displacement (m)"
+      };
+      vars.forEach(v => {
+        div.innerHTML += `<label>${names[v]}<input type="number" id="input-${v}" required></label>`;
+      });
+    }
+
+    function solveKinematics() {
+      const solveFor = document.getElementById("solve-for").value;
+      let inputs = {}, abort=false;
+      ["v0","v","a","t","d"].forEach(k=>{
+        if(k!==solveFor){
+          const val = parseFloat(document.getElementById(`input-${k}`).value);
+          if(isNaN(val)){ alert(`Enter ${k}`); abort=true; }
+          inputs[k]=val;
+        }
+      });
+      if(abort) return;
+      let res="", exp="";
+      try {
+        switch(solveFor) {
+          case "v":
+            var out = inputs.v0 + inputs.a*inputs.t;
+            res = `v = ${inputs.v0} + ${inputs.a}×${inputs.t} = ${formatNumber(out)} m/s`;
+            exp = "1) v = v₀ + a×t\n2) Compute.";
+            break;
+          case "v0":
+            var out = inputs.v - inputs.a*inputs.t;
+            res = `v₀ = ${inputs.v} - ${inputs.a}×${inputs.t} = ${formatNumber(out)} m/s`;
+            exp = "1) v₀ = v - a×t\n2) Compute.";
+            break;
+          case "a":
+            if(inputs.t===0) throw "t=0";
+            var out = (inputs.v - inputs.v0)/inputs.t;
+            res = `a = (${inputs.v}-${inputs.v0})/${inputs.t} = ${formatNumber(out)} m/s²`;
+            exp = "1) a=(v-v₀)/t\n2) Compute.";
+            break;
+          case "t":
+            if(inputs.a===0) throw "a=0";
+            var out = (inputs.v - inputs.v0)/inputs.a;
+            res = `t = (${inputs.v}-${inputs.v0})/${inputs.a} = ${formatNumber(out)} s`;
+            exp = "1) t=(v-v₀)/a\n2) Compute.";
+            break;
+          case "d":
+            var out = inputs.v0*inputs.t + 0.5*inputs.a*Math.pow(inputs.t,2);
+            res = `d = ${inputs.v0}×${inputs.t} + 0.5×${inputs.a}×${inputs.t}² = ${formatNumber(out)} m`;
+            exp = "1) d=v₀t+½at²\n2) Compute.";
+            break;
+        }
+      } catch(e){ res="Error: "+e; }
+      document.getElementById("kinResult").innerText =
+        includeSteps ? res+"\n\n"+exp : res;
+    }
+
+    function toggleDontKnow() {
+      const sec = document.getElementById("dont-know-section");
+      sec.style.display = (sec.style.display==="block") ? "none" : "block";
+    }
+
+    function solveDontKnow() {
+      const v0=parseFloat(document.getElementById("dk-v0").value),
+            v =parseFloat(document.getElementById("dk-v").value),
+            a =parseFloat(document.getElementById("dk-a").value),
+            t =parseFloat(document.getElementById("dk-t").value),
+            d =parseFloat(document.getElementById("dk-d").value);
+      const known={v0,v,a,t,d};
+      const filled=Object.values(known).filter(x=>!isNaN(x)).length;
+      if(filled<3){ document.getElementById("dk-result").innerText="Enter≥3 values."; return; }
+      const missing=Object.entries(known).filter(([k,val])=>isNaN(val)).map(([k])=>k);
+      if(missing.length!==1){
+        document.getElementById("dk-result").innerText="Leave one blank."; return;
+      }
+      let ans=NaN, x=missing[0];
+      try{
+        switch(x){
+          case "v":
+            if(!isNaN(v0)&&!isNaN(a)&&!isNaN(t)) ans=v0+a*t;
+            else if(!isNaN(d)&&!isNaN(v0)&&!isNaN(a)) ans=Math.sqrt(v0*v0+2*a*d);
+            break;
+          case "v0":
+            if(!isNaN(v)&&!isNaN(a)&&!isNaN(t)) ans=v - a*t;
+            else if(!isNaN(v)&&!isNaN(d)&&!isNaN(a)) ans=Math.sqrt(v*v-2*a*d);
+            break;
+          case "a":
+            if(!isNaN(v)&&!isNaN(v0)&&!isNaN(t)&&t!==0) ans=(v-v0)/t;
+            else if(!isNaN(v)&&!isNaN(v0)&&!isNaN(d)&&d!==0) ans=(v*v-v0*v0)/(2*d);
+            break;
+          case "t":
+            if(!isNaN(v)&&!isNaN(v0)&&!isNaN(a)&&a!==0) ans=(v-v0)/a;
+            else {
+              const A=0.5*a,B=v0,C=-d;
+              const disc=B*B-4*A*C;
+              if(disc<0) throw "No real";
+              const t1=(-B+Math.sqrt(disc))/(2*A),
+                    t2=(-B-Math.sqrt(disc))/(2*A);
+              ans=(t1>=0?t1:t2);
+            }
+            break;
+          case "d":
+            if(!isNaN(v0)&&!isNaN(a)&&!isNaN(t)) ans=v0*t+0.5*a*t*t;
+            else if(!isNaN(v)&&!isNaN(v0)&&!isNaN(a)) ans=(v*v-v0*v0)/(2*a);
+            break;
+        }
+      }catch(e){ document.getElementById("dk-result").innerText="Error:"+e; return; }
+      const out=isNaN(ans)?"Inconsistent data.":`Solved ${x} = ${formatNumber(ans)}`;
+      document.getElementById("dk-result").innerText = out;
+    }
+
+    /////////////////////////////
+    // Energy & Momentum
+    /////////////////////////////
+    function updateEnergyInputs() {
+      const sf=document.getElementById("solve-energy").value;
+      const div=document.getElementById("energy-input-fields");
+      div.innerHTML="";
+      const map={
+        ke:["Mass (kg)","Velocity (m/s)"],
+        pe:["Mass (kg)","Height (m)"],
+        p :["Mass (kg)","Velocity (m/s)"],
+        impulse:["Force (N)","Time (s)"]
+      };
+      map[sf].forEach((txt,i)=>{
+        div.innerHTML+=`<label>${txt}<input type="number" id="energy-input-${i}" required></label>`;
+      });
+    }
+    function solveEnergyMomentum() {
+      const sf=document.getElementById("solve-energy").value;
+      const vals=[...document.querySelectorAll("#energy-input-fields input")]
+                 .map(i=>parseFloat(i.value));
+      let res="",exp="";
+      try{
+        switch(sf){
+          case "ke":
+            var out=0.5*vals[0]*Math.pow(vals[1],2);
+            res=`KE=0.5×${vals[0]}×${vals[1]}²=${formatNumber(out)}J`;
+            exp="1) KE=½mv²\n2) Compute.";
+            break;
+          case "pe":
+            var out=vals[0]*9.81*vals[1];
+            res=`PE=${vals[0]}×9.81×${vals[1]}=${formatNumber(out)}J`;
+            exp="1) PE=mgh\n2) Compute.";
+            break;
+          case "p":
+            var out=vals[0]*vals[1];
+            res=`p=${vals[0]}×${vals[1]}=${formatNumber(out)}kg·m/s`;
+            exp="1) p=mv\n2) Compute.";
+            break;
+          case "impulse":
+            var out=vals[0]*vals[1];
+            res=`J=${vals[0]}×${vals[1]}=${formatNumber(out)}Ns`;
+            exp="1) J=FΔt\n2) Compute.";
+            break;
+        }
+      }catch(e){ res="Error:"+e; }
+      document.getElementById("energyResult").innerText =
+        includeSteps? res+"\n\n"+exp:res;
+    }
+
+    /////////////////////////////
+    // Fields
+    /////////////////////////////
+    function updateFieldsInputs(){
+      const sf=document.getElementById("solve-fields").value;
+      const div=document.getElementById("fields-input-fields");
+      div.innerHTML="";
+      if(sf==="grav"){
+        div.innerHTML+=`<label>Mass1(kg)<input type="number" id="fields-input-0" required></label>`;
+        div.innerHTML+=`<label>Mass2(kg)<input type="number" id="fields-input-1" required></label>`;
+        div.innerHTML+=`<label>Dist(m)<input type="number" id="fields-input-2" required></label>`;
+      } else {
+        div.innerHTML+=`<label>Charge(C)<input type="number" id="fields-input-0" required></label>`;
+        div.innerHTML+=`<label>Dist(m)<input type="number" id="fields-input-1" required></label>`;
+      }
+    }
+    function solveFields(){
+      const sf=document.getElementById("solve-fields").value;
+      let res="",exp="";
+      try{
+        if(sf==="grav"){
+          const m1=parseFloat(document.getElementById("fields-input-0").value),
+                m2=parseFloat(document.getElementById("fields-input-1").value),
+                r =parseFloat(document.getElementById("fields-input-2").value),
+                G =6.67430e-11,
+                F =G*m1*m2/Math.pow(r,2);
+          res=`F=${G}×(${m1}×${m2})/(${r}²)=${formatNumber(F)}N`;
+          exp="1) F=Gm₁m₂/r²\n2) Compute.";
+        } else {
+          const Q=parseFloat(document.getElementById("fields-input-0").value),
+                r =parseFloat(document.getElementById("fields-input-1").value),
+                k =8.98755e9,
+                E =k*Q/Math.pow(r,2);
+          res=`E=${k}×${Q}/(${r}²)=${formatNumber(E)}N/C`;
+          exp="1) E=kQ/r²\n2) Compute.";
+        }
+      }catch(e){ res="Error:"+e; }
+      document.getElementById("fieldsResult").innerText =
+        includeSteps? res+"\n\n"+exp:res;
+    }
+
+    /////////////////////////////
+    // Waves
+    /////////////////////////////
+    function updateWavesInputs(){
+      const sf=document.getElementById("solve-waves").value;
+      const div=document.getElementById("waves-input-fields");
+      div.innerHTML="";
+      if(sf==="v"){
+        div.innerHTML+=`<label>Freq(Hz)<input type="number" id="waves-input-0" required></label>`;
+        div.innerHTML+=`<label>λ(m)<input type="number" id="waves-input-1" required></label>`;
+      } else if(sf==="f"){
+        div.innerHTML+=`<label>v(m/s)<input type="number" id="waves-input-0" required></label>`;
+        div.innerHTML+=`<label>λ(m)<input type="number" id="waves-input-1" required></label>`;
+      } else {
+        div.innerHTML+=`<label>v(m/s)<input type="number" id="waves-input-0" required></label>`;
+        div.innerHTML+=`<label>Freq(Hz)<input type="number" id="waves-input-1" required></label>`;
+      }
+    }
+    function solveWaves(){
+      const sf=document.getElementById("solve-waves").value;
+      const vals=[...document.querySelectorAll("#waves-input-fields input")]
+                 .map(i=>parseFloat(i.value));
+      let res="",exp="";
+      try{
+        if(sf==="v"){
+          var out=vals[0]*vals[1];
+          res=`v=${vals[0]}×${vals[1]}=${formatNumber(out)}m/s`;
+          exp="1) v=fλ\n2) Compute.";
+        } else if(sf==="f"){
+          if(vals[1]===0) throw "λ=0";
+          var out=vals[0]/vals[1];
+          res=`f=${vals[0]}/${vals[1]}=${formatNumber(out)}Hz`;
+          exp="1) f=v/λ\n2) Compute.";
+        } else {
+          if(vals[1]===0) throw "f=0";
+          var out=vals[0]/vals[1];
+          res=`λ=${vals[0]}/${vals[1]}=${formatNumber(out)}m`;
+          exp="1) λ=v/f\n2) Compute.";
+        }
+      }catch(e){ res="Error:"+e; }
+      document.getElementById("wavesResult").innerText =
+        includeSteps? res+"\n\n"+exp:res;
+    }
+
+    /////////////////////////////
+    // Modern Physics
+    /////////////////////////////
+    function updateModernInputs(){
+      const sf=document.getElementById("solve-modern").value;
+      const div=document.getElementById("modern-input-fields");
+      div.innerHTML="";
+      if(sf==="rke"){
+        div.innerHTML+=`<label>Mass(kg)<input type="number" id="modern-input-0" required></label>`;
+        div.innerHTML+=`<label>v(m/s)<input type="number" id="modern-input-1" required></label>`;
+      } else {
+        div.innerHTML+=`<label>Mass(kg)<input type="number" id="modern-input-0" required></label>`;
+      }
+    }
+    function solveModern(){
+      const sf=document.getElementById("solve-modern").value;
+      const c=3e8;
+      let res="",exp="";
+      try{
+        if(sf==="rke"){
+          const m=parseFloat(document.getElementById("modern-input-0").value),
+                v=parseFloat(document.getElementById("modern-input-1").value);
+          if(v>=c) throw "v≥c";
+          const γ=1/Math.sqrt(1-Math.pow(v/c,2)),
+                K=(γ-1)*m*c*c;
+          res=`K=(${formatNumber(γ)}-1)×${m}×c²=${formatNumber(K)}J`;
+          exp="1) γ=1/√(1-v²/c²)\n2)K=(γ-1)mc²";
+        } else {
+          const m=parseFloat(document.getElementById("modern-input-0").value),
+                E=m*c*c;
+          res=`E=${m}×c²=${formatNumber(E)}J`;
+          exp="1)E=mc²";
+        }
+      }catch(e){ res="Error:"+e; }
+      document.getElementById("modernResult").innerText =
+        includeSteps? res+"\n\n"+exp:res;
+    }
+
+    /////////////////////////////
+    // Graphing
+    /////////////////////////////
+    function plotGraph(){
+      const type=document.getElementById("graph-type").value;
+      const tArr=document.getElementById("graph-time").value.split(",").map(n=>parseFloat(n.trim()));
+      const vArr=document.getElementById("graph-value").value.split(",").map(n=>parseFloat(n.trim()));
+      if(tArr.length!==vArr.length){ alert("Time/value mismatch"); return; }
+      let X=[],Y=[],lbl="";
+      if(type==="vt"){ X=tArr; Y=vArr; lbl="Velocity (m/s)"; }
+      else if(type==="at"){
+        if(tArr.length<2){ alert("Need≥2"); return; }
+        for(let i=0;i<tArr.length-1;i++){
+          const dt=tArr[i+1]-tArr[i];
+          if(dt===0){ alert("Time must increase"); return; }
+          X.push((tArr[i]+tArr[i+1])/2);
+          Y.push((vArr[i+1]-vArr[i])/dt);
+        }
+        lbl="Acceleration (m/s²)";
+      } else {
+        if(tArr.length<2){ alert("Need≥2"); return; }
+        X=tArr; Y=[0];
+        for(let i=1;i<tArr.length;i++){
+          const dt=tArr[i]-tArr[i-1],
+                avg=(vArr[i-1]+vArr[i])/2;
+          Y.push(Y[i-1]+avg*dt);
+        }
+        lbl="Displacement (m)";
+      }
+      if(chart) chart.destroy();
+      const ctx=document.getElementById("graphCanvas").getContext("2d");
+      chart=new Chart(ctx,{
+        type:"line",
+        data:{ labels:X,
+               datasets:[{
+                 label:lbl, data:Y,
+                 backgroundColor:"rgba(75,121,161,0.2)",
+                 borderColor:"rgba(75,121,161,1)",
+                 borderWidth:2,tension:0.1,fill:true
+               }]
+        },
+        options:{ scales:{
+          x:{ title:{ display:true,text:"Time (s)" }},
+          y:{ title:{ display:true,text:lbl }}
+        }}
+      });
+    }
+
+    /////////////////////////////
+    // Converter
+    /////////////////////////////
+    function updateConverterInputs(){
+      const type=document.getElementById("conversion-type").value;
+      const div=document.getElementById("converter-input-fields");
+      div.innerHTML="";
+      if(type==="speed"){
+        div.innerHTML=`
+          <label>Select:<select id="speed-direction">
+            <option value="kmToMs">km/hr→m/s</option>
+            <option value="msToKm">m/s→km/hr</option>
+          </select></label>
+          <label>Value:<input type="number" id="conversion-input" placeholder="Enter value"></label>`;
+      }
+      else if(type==="distance"){
+        div.innerHTML=`
+          <label>Select:<select id="distance-direction">
+            <option value="kmToM">km→m</option>
+            <option value="mToKm">m→km</option>
+            <option value="kmToMi">km→mi</option>
+            <option value="miToKm">mi→km</option>
+            <option value="mToFt">m→ft</option>
+            <option value="ftToM">ft→m</option>
+          </select></label>
+          <label>Value:<input type="number" id="conversion-input" placeholder="Enter value"></label>`;
+      }
+      else if(type==="temperature"){
+        div.innerHTML=`
+          <label>Select:<select id="temp-direction">
+            <option value="cToF">°C→°F</option>
+            <option value="fToC">°F→°C</option>
+            <option value="cToK">°C→K</option>
+            <option value="kToC">K→°C</option>
+          </select></label>
+          <label>Value:<input type="number" id="conversion-input" placeholder="Enter value"></label>`;
+      }
+      else if(type==="energy"){
+        div.innerHTML=`
+          <label>Select:<select id="energy-direction">
+            <option value="joulesToEv">J→eV</option>
+            <option value="evToJoules">eV→J</option>
+            <option value="joulesToCal">J→cal</option>
+            <option value="calToJoules">cal→J</option>
+            <option value="joulesToWh">J→Wh</option>
+            <option value="whToJoules">Wh→J</option>
+          </select></label>
+          <label>Value:<input type="number" id="conversion-input" placeholder="Enter value"></label>`;
+      }
+      else if(type==="mass"){
+        div.innerHTML=`
+          <label>Select:<select id="mass-direction">
+            <option value="kgToLb">kg→lb</option>
+            <option value="lbToKg">lb→kg</option>
+            <option value="kgToG">kg→g</option>
+            <option value="gToKg">g→kg</option>
+            <option value="lbToOz">lb→oz</option>
+            <option value="ozToLb">oz→lb</option>
+          </select></label>
+          <label>Value:<input type="number" id="conversion-input" placeholder="Enter value"></label>`;
+      }
+      else if(type==="volume"){
+        div.innerHTML=`
+          <label>Select:<select id="volume-direction">
+            <option value="lToM3">L→m³</option>
+            <option value="m3ToL">m³→L</option>
+            <option value="lToGal">L→gal</option>
+            <option value="galToL">gal→L</option>
+          </select></label>
+          <label>Value:<input type="number" id="conversion-input" placeholder="Enter value"></label>`;
+      }
+      else if(type === "pressure") {
+        div.innerHTML = `
+          <label>Select:<select id="pressure-direction">
+            <option value="kPaToAtm">kPa→atm</option>
+            <option value="atmToKPa">atm→kPa</option>
+            <option value="kPaToPsi">kPa→psi</option>
+            <option value="psiToKPa">psi→kPa</option>
+          </select></label>
+          <label>Value:<input type="number" id="conversion-input" placeholder="Enter value"></label>
+        `;
+      }
+      else if(type === "force") {
+        div.innerHTML = `
+          <label>Select:<select id="force-direction">
+            <option value="ntToKgf">N→kgf</option>
+            <option value="kgfToNt">kgf→N</option>
+          </select></label>
+          <label>Value:<input type="number" id="conversion-input" placeholder="Enter value"></label>
+        `;
+      }
+      else if(type === "power") {
+        div.innerHTML = `
+          <label>Select:<select id="power-direction">
+            <option value="wToHp">W→hp</option>
+            <option value="hpToW">hp→W</option>
+          </select></label>
+          <label>Value:<input type="number" id="conversion-input" placeholder="Enter value"></label>
+        `;
+      }
+      else if(type === "area") {
+        div.innerHTML = `
+          <label>Select:<select id="area-direction">
+            <option value="m2ToFt2">m²→ft²</option>
+            <option value="ft2ToM2">ft²→m²</option>
+            <option value="km2ToMi2">km²→mi²</option>
+            <option value="mi2ToKm2">mi²→km²</option>
+          </select></label>
+          <label>Value:<input type="number" id="conversion-input" placeholder="Enter value"></label>
+        `;
+      }
+    }
+
+    function performConversion() {
+      const type = document.getElementById("conversion-type").value;
+      const inputVal = parseFloat(document.getElementById("conversion-input").value);
+      let result = "";
+      if (isNaN(inputVal)) {
+        alert("Enter a valid number.");
+        return;
+      }
+
+      if (type === "speed") {
+        const dir = document.getElementById("speed-direction").value;
+        result = dir === "kmToMs"
+          ? `${inputVal} km/hr = ${formatNumber(inputVal/3.6)} m/s`
+          : `${inputVal} m/s = ${formatNumber(inputVal*3.6)} km/hr`;
+      }
+      else if (type === "distance") {
+        const dir = document.getElementById("distance-direction").value;
+        if      (dir === "kmToM")   result = `${inputVal} km = ${formatNumber(inputVal*1000)} m`;
+        else if (dir === "mToKm")   result = `${inputVal} m = ${formatNumber(inputVal/1000)} km`;
+        else if (dir === "kmToMi")  result = `${inputVal} km = ${formatNumber(inputVal*0.621371)} mi`;
+        else if (dir === "miToKm")  result = `${inputVal} mi = ${formatNumber(inputVal/0.621371)} km`;
+        else if (dir === "mToFt")   result = `${inputVal} m = ${formatNumber(inputVal*3.28084)} ft`;
+        else if (dir === "ftToM")   result = `${inputVal} ft = ${formatNumber(inputVal/3.28084)} m`;
+      }
+      else if (type === "temperature") {
+        const dir = document.getElementById("temp-direction").value;
+        if      (dir === "cToF") result = `${inputVal}°C = ${formatNumber(inputVal*9/5 + 32)}°F`;
+        else if (dir === "fToC") result = `${inputVal}°F = ${formatNumber((inputVal-32)*5/9)}°C`;
+        else if (dir === "cToK") result = `${inputVal}°C = ${formatNumber(inputVal + 273.15)} K`;
+        else if (dir === "kToC") result = `${inputVal} K = ${formatNumber(inputVal - 273.15)}°C`;
+      }
+      else if (type === "energy") {
+        const dir = document.getElementById("energy-direction").value;
+        if      (dir === "joulesToEv")   result = `${inputVal} J = ${formatNumber(inputVal/1.60218e-19)} eV`;
+        else if (dir === "evToJoules")   result = `${inputVal} eV = ${formatNumber(inputVal*1.60218e-19)} J`;
+        else if (dir === "joulesToCal")  result = `${inputVal} J = ${formatNumber(inputVal/4.184)} cal`;
+        else if (dir === "calToJoules")  result = `${inputVal} cal = ${formatNumber(inputVal*4.184)} J`;
+        else if (dir === "joulesToWh")   result = `${inputVal} J = ${formatNumber(inputVal/3600)} Wh`;
+        else if (dir === "whToJoules")   result = `${inputVal} Wh = ${formatNumber(inputVal*3600)} J`;
+      }
+      else if (type === "mass") {
+        const dir = document.getElementById("mass-direction").value;
+        if      (dir === "kgToLb")  result = `${inputVal} kg = ${formatNumber(inputVal*2.20462)} lb`;
+        else if (dir === "lbToKg")  result = `${inputVal} lb = ${formatNumber(inputVal/2.20462)} kg`;
+        else if (dir === "kgToG")   result = `${inputVal} kg = ${formatNumber(inputVal*1000)} g`;
+        else if (dir === "gToKg")   result = `${inputVal} g = ${formatNumber(inputVal/1000)} kg`;
+        else if (dir === "lbToOz")  result = `${inputVal} lb = ${formatNumber(inputVal*16)} oz`;
+        else if (dir === "ozToLb")  result = `${inputVal} oz = ${formatNumber(inputVal/16)} lb`;
+      }
+      else if (type === "volume") {
+        const dir = document.getElementById("volume-direction").value;
+        if      (dir === "lToM3")  result = `${inputVal} L = ${formatNumber(inputVal/1000)} m³`;
+        else if (dir === "m3ToL")  result = `${inputVal} m³ = ${formatNumber(inputVal*1000)} L`;
+        else if (dir === "lToGal") result = `${inputVal} L = ${formatNumber(inputVal/3.78541)} gal`;
+        else if (dir === "galToL") result = `${inputVal} gal = ${formatNumber(inputVal*3.78541)} L`;
+      }
+
+      document.getElementById("converterResult").innerText = result;
+    }
+
+    /////////////////////////////
+    // Practice / Quiz
+    /////////////////////////////
+    function generatePracticeProblem() {
+      const cat = document.getElementById("practice-category").value;
+      let text="", ans=0;
+
+      if (cat === "kinematics") {
+        const type = Math.floor(Math.random()*3);
+        if (type===0) {
+          const v0=(Math.random()*10).toFixed(1),
+                a =(Math.random()*5).toFixed(1),
+                t =(Math.random()*5+1).toFixed(1);
+          ans = parseFloat(v0)+parseFloat(a)*parseFloat(t);
+          text=`Car starts at ${v0} m/s, accel ${a} m/s² for ${t} s. Find final v.`;
+        }
+        else if (type===1) {
+          const v0=(Math.random()*10).toFixed(1),
+                a =(Math.random()*5).toFixed(1),
+                t =(Math.random()*5+1).toFixed(1);
+          ans = parseFloat(v0)*parseFloat(t)+0.5*parseFloat(a)*t*t;
+          text=`Object at ${v0} m/s, accel ${a} m/s² for ${t} s. Find displacement.`;
+        }
+        else {
+          const v0=(Math.random()*10).toFixed(1),
+                v =(parseFloat(v0)+Math.random()*10+1).toFixed(1),
+                a =(Math.random()*5+1).toFixed(1);
+          ans=(parseFloat(v)-parseFloat(v0))/parseFloat(a);
+          text=`Speed up from ${v0} to ${v} m/s at ${a} m/s². Find time.`;
+        }
+      }
+      else if (cat==="energy") {
+        const type=Math.floor(Math.random()*2);
+        if (type===0) {
+          const m=(Math.random()*5+1).toFixed(1),
+                v=(Math.random()*10+1).toFixed(1);
+          ans=0.5*parseFloat(m)*Math.pow(parseFloat(v),2);
+          text=`Mass ${m} kg, speed ${v} m/s. Find KE.`;
+        } else {
+          const m=(Math.random()*5+1).toFixed(1),
+                h=(Math.random()*10+1).toFixed(1);
+          ans=parseFloat(m)*9.81*parseFloat(h);
+          text=`Mass ${m} kg at height ${h} m. Find PE.`;
+        }
+      }
+      else if (cat==="fields") {
+        const type=Math.floor(Math.random()*2);
+        if (type===0) {
+          const m1=(Math.random()*100+10).toFixed(1),
+                m2=(Math.random()*100+10).toFixed(1),
+                r =(Math.random()*5+1).toFixed(1),
+                G =6.67430e-11;
+          ans=G*parseFloat(m1)*parseFloat(m2)/Math.pow(parseFloat(r),2);
+          text=`Force between ${m1} kg & ${m2} kg separated by ${r} m.`;
+        } else {
+          const Q=(Math.random()*1e-5+1e-6),
+                r =(Math.random()*2+0.5).toFixed(2),
+                k =8.98755e9;
+          ans=k*Q/Math.pow(parseFloat(r),2);
+          text=`E-field from charge ${Q.toExponential(2)} C at ${r} m.`;
+        }
+      }
+      else if (cat==="waves") {
+        const f=(Math.random()*5+1).toFixed(1),
+              λ=(Math.random()*2+0.5).toFixed(2);
+        ans=parseFloat(f)*parseFloat(λ);
+        text=`Frequency ${f} Hz, λ ${λ} m. Find speed.`;
+      }
+      else if (cat==="modern") {
+        const type=Math.floor(Math.random()*2),
+              m=(Math.random()*2+0.5).toFixed(3);
+        if(type===0) {
+          ans=parseFloat(m)*Math.pow(3e8,2);
+          text=`Mass ${m} kg. Find rest energy.`;
+        } else {
+          const frac=(Math.random()*0.5+0.1).toFixed(2),
+                v=frac*3e8,
+                γ=1/Math.sqrt(1-Math.pow(v/3e8,2));
+          ans=(γ-1)*parseFloat(m)*Math.pow(3e8,2);
+          text=`Mass ${m} kg at ${frac}c. Find relativistic KE.`;
+        }
+      }
+
+      currentProblem = { answer: ans };
+      document.getElementById("practice-problem").innerText = text;
+      document.getElementById("practice-answer").value = "";
+      document.getElementById("practice-result").innerText = "";
+    }
+
+    function checkPracticeAnswer() {
+      const user = parseFloat(document.getElementById("practice-answer").value);
+      if (isNaN(user)) { alert("Enter an answer."); return; }
+      const correct = currentProblem.answer;
+      const tol = Math.abs(correct) * 0.01;
+      const msg = Math.abs(user - correct) < tol
+        ? `Correct! ≈ ${formatNumber(correct)}`
+        : `Incorrect. Correct ≈ ${formatNumber(correct)}`;
+      document.getElementById("practice-result").innerText = msg;
+    }
+  </script>
+</body>
+</html>
