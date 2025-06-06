@@ -846,65 +846,89 @@
       }
     }
 
-    function performConversion() {
-      const type = document.getElementById("conversion-type").value;
-      const inputVal = parseFloat(document.getElementById("conversion-input").value);
-      let result = "";
-      if (isNaN(inputVal)) {
-        alert("Enter a valid number.");
-        return;
-      }
+function performConversion() {
+  const type = document.getElementById("conversion-type").value;
+  const inputVal = parseFloat(document.getElementById("conversion-input").value);
+  let result = "";
+  if (isNaN(inputVal)) {
+    alert("Enter a valid number.");
+    return;
+  }
 
-      if (type === "speed") {
-        const dir = document.getElementById("speed-direction").value;
-        result = dir === "kmToMs"
-          ? `${inputVal} km/hr = ${formatNumber(inputVal/3.6)} m/s`
-          : `${inputVal} m/s = ${formatNumber(inputVal*3.6)} km/hr`;
-      }
-      else if (type === "distance") {
-        const dir = document.getElementById("distance-direction").value;
-        if      (dir === "kmToM")   result = `${inputVal} km = ${formatNumber(inputVal*1000)} m`;
-        else if (dir === "mToKm")   result = `${inputVal} m = ${formatNumber(inputVal/1000)} km`;
-        else if (dir === "kmToMi")  result = `${inputVal} km = ${formatNumber(inputVal*0.621371)} mi`;
-        else if (dir === "miToKm")  result = `${inputVal} mi = ${formatNumber(inputVal/0.621371)} km`;
-        else if (dir === "mToFt")   result = `${inputVal} m = ${formatNumber(inputVal*3.28084)} ft`;
-        else if (dir === "ftToM")   result = `${inputVal} ft = ${formatNumber(inputVal/3.28084)} m`;
-      }
-      else if (type === "temperature") {
-        const dir = document.getElementById("temp-direction").value;
-        if      (dir === "cToF") result = `${inputVal}°C = ${formatNumber(inputVal*9/5 + 32)}°F`;
-        else if (dir === "fToC") result = `${inputVal}°F = ${formatNumber((inputVal-32)*5/9)}°C`;
-        else if (dir === "cToK") result = `${inputVal}°C = ${formatNumber(inputVal + 273.15)} K`;
-        else if (dir === "kToC") result = `${inputVal} K = ${formatNumber(inputVal - 273.15)}°C`;
-      }
-      else if (type === "energy") {
-        const dir = document.getElementById("energy-direction").value;
-        if      (dir === "joulesToEv")   result = `${inputVal} J = ${formatNumber(inputVal/1.60218e-19)} eV`;
-        else if (dir === "evToJoules")   result = `${inputVal} eV = ${formatNumber(inputVal*1.60218e-19)} J`;
-        else if (dir === "joulesToCal")  result = `${inputVal} J = ${formatNumber(inputVal/4.184)} cal`;
-        else if (dir === "calToJoules")  result = `${inputVal} cal = ${formatNumber(inputVal*4.184)} J`;
-        else if (dir === "joulesToWh")   result = `${inputVal} J = ${formatNumber(inputVal/3600)} Wh`;
-        else if (dir === "whToJoules")   result = `${inputVal} Wh = ${formatNumber(inputVal*3600)} J`;
-      }
-      else if (type === "mass") {
-        const dir = document.getElementById("mass-direction").value;
-        if      (dir === "kgToLb")  result = `${inputVal} kg = ${formatNumber(inputVal*2.20462)} lb`;
-        else if (dir === "lbToKg")  result = `${inputVal} lb = ${formatNumber(inputVal/2.20462)} kg`;
-        else if (dir === "kgToG")   result = `${inputVal} kg = ${formatNumber(inputVal*1000)} g`;
-        else if (dir === "gToKg")   result = `${inputVal} g = ${formatNumber(inputVal/1000)} kg`;
-        else if (dir === "lbToOz")  result = `${inputVal} lb = ${formatNumber(inputVal*16)} oz`;
-        else if (dir === "ozToLb")  result = `${inputVal} oz = ${formatNumber(inputVal/16)} lb`;
-      }
-      else if (type === "volume") {
-        const dir = document.getElementById("volume-direction").value;
-        if      (dir === "lToM3")  result = `${inputVal} L = ${formatNumber(inputVal/1000)} m³`;
-        else if (dir === "m3ToL")  result = `${inputVal} m³ = ${formatNumber(inputVal*1000)} L`;
-        else if (dir === "lToGal") result = `${inputVal} L = ${formatNumber(inputVal/3.78541)} gal`;
-        else if (dir === "galToL") result = `${inputVal} gal = ${formatNumber(inputVal*3.78541)} L`;
-      }
+  if (type === "speed") {
+    const dir = document.getElementById("speed-direction").value;
+    result = dir === "kmToMs"
+      ? `${inputVal} km/hr = ${formatNumber(inputVal/3.6)} m/s`
+      : `${inputVal} m/s = ${formatNumber(inputVal*3.6)} km/hr`;
+  }
+  else if (type === "distance") {
+    const dir = document.getElementById("distance-direction").value;
+    if      (dir === "kmToM")   result = `${inputVal} km = ${formatNumber(inputVal*1000)} m`;
+    else if (dir === "mToKm")   result = `${inputVal} m = ${formatNumber(inputVal/1000)} km`;
+    else if (dir === "kmToMi")  result = `${inputVal} km = ${formatNumber(inputVal*0.621371)} mi`;
+    else if (dir === "miToKm")  result = `${inputVal} mi = ${formatNumber(inputVal/0.621371)} km`;
+    else if (dir === "mToFt")   result = `${inputVal} m = ${formatNumber(inputVal*3.28084)} ft`;
+    else if (dir === "ftToM")   result = `${inputVal} ft = ${formatNumber(inputVal/3.28084)} m`;
+  }
+  else if (type === "temperature") {
+    const dir = document.getElementById("temp-direction").value;
+    if      (dir === "cToF") result = `${inputVal}°C = ${formatNumber(inputVal*9/5+32)}°F`;
+    else if (dir === "fToC") result = `${inputVal}°F = ${formatNumber((inputVal-32)*5/9)}°C`;
+    else if (dir === "cToK") result = `${inputVal}°C = ${formatNumber(inputVal+273.15)} K`;
+    else if (dir === "kToC") result = `${inputVal} K = ${formatNumber(inputVal-273.15)}°C`;
+  }
+  else if (type === "energy") {
+    const dir = document.getElementById("energy-direction").value;
+    if      (dir === "joulesToEv")  result = `${inputVal} J = ${formatNumber(inputVal/1.60218e-19)} eV`;
+    else if (dir === "evToJoules")  result = `${inputVal} eV = ${formatNumber(inputVal*1.60218e-19)} J`;
+    else if (dir === "joulesToCal") result = `${inputVal} J = ${formatNumber(inputVal/4.184)} cal`;
+    else if (dir === "calToJoules") result = `${inputVal} cal = ${formatNumber(inputVal*4.184)} J`;
+    else if (dir === "joulesToWh")  result = `${inputVal} J = ${formatNumber(inputVal/3600)} Wh`;
+    else if (dir === "whToJoules")  result = `${inputVal} Wh = ${formatNumber(inputVal*3600)} J`;
+  }
+  else if (type === "mass") {
+    const dir = document.getElementById("mass-direction").value;
+    if      (dir === "kgToLb")  result = `${inputVal} kg = ${formatNumber(inputVal*2.20462)} lb`;
+    else if (dir === "lbToKg")  result = `${inputVal} lb = ${formatNumber(inputVal/2.20462)} kg`;
+    else if (dir === "kgToG")   result = `${inputVal} kg = ${formatNumber(inputVal*1000)} g`;
+    else if (dir === "gToKg")   result = `${inputVal} g = ${formatNumber(inputVal/1000)} kg`;
+    else if (dir === "lbToOz")  result = `${inputVal} lb = ${formatNumber(inputVal*16)} oz`;
+    else if (dir === "ozToLb")  result = `${inputVal} oz = ${formatNumber(inputVal/16)} lb`;
+  }
+  else if (type === "volume") {
+    const dir = document.getElementById("volume-direction").value;
+    if      (dir === "lToM3")  result = `${inputVal} L = ${formatNumber(inputVal/1000)} m³`;
+    else if (dir === "m3ToL")  result = `${inputVal} m³ = ${formatNumber(inputVal*1000)} L`;
+    else if (dir === "lToGal") result = `${inputVal} L = ${formatNumber(inputVal/3.78541)} gal`;
+    else if (dir === "galToL") result = `${inputVal} gal = ${formatNumber(inputVal*3.78541)} L`;
+  }
+  else if (type === "pressure") {
+    const dir = document.getElementById("pressure-direction").value;
+    if      (dir === "kPaToAtm") result = `${inputVal} kPa = ${formatNumber(inputVal/101.325)} atm`;
+    else if (dir === "atmToKPa") result = `${inputVal} atm = ${formatNumber(inputVal*101.325)} kPa`;
+    else if (dir === "kPaToPsi") result = `${inputVal} kPa = ${formatNumber(inputVal/6.89476)} psi`;
+    else if (dir === "psiToKPa") result = `${inputVal} psi = ${formatNumber(inputVal*6.89476)} kPa`;
+  }
+  else if (type === "force") {
+    const dir = document.getElementById("force-direction").value;
+    if      (dir === "ntToKgf") result = `${inputVal} N = ${formatNumber(inputVal/9.80665)} kgf`;
+    else if (dir === "kgfToNt") result = `${inputVal} kgf = ${formatNumber(inputVal*9.80665)} N`;
+  }
+  else if (type === "power") {
+    const dir = document.getElementById("power-direction").value;
+    if      (dir === "wToHp") result = `${inputVal} W = ${formatNumber(inputVal/745.7)} hp`;
+    else if (dir === "hpToW") result = `${inputVal} hp = ${formatNumber(inputVal*745.7)} W`;
+  }
+  else if (type === "area") {
+    const dir = document.getElementById("area-direction").value;
+    if      (dir === "m2ToFt2") result = `${inputVal} m² = ${formatNumber(inputVal*10.7639)} ft²`;
+    else if (dir === "ft2ToM2") result = `${inputVal} ft² = ${formatNumber(inputVal/10.7639)} m²`;
+    else if (dir === "km2ToMi2") result = `${inputVal} km² = ${formatNumber(inputVal*0.386102)} mi²`;
+    else if (dir === "mi2ToKm2") result = `${inputVal} mi² = ${formatNumber(inputVal/0.386102)} km²`;
+  }
 
-      document.getElementById("converterResult").innerText = result;
-    }
+  document.getElementById("converterResult").innerText = result;
+}
 
     /////////////////////////////
     // Practice / Quiz
