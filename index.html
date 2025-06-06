@@ -428,29 +428,29 @@
           case "v":
             var out = inputs.v0 + inputs.a*inputs.t;
             res = `v = ${inputs.v0} + ${inputs.a}×${inputs.t} = ${formatNumber(out)} m/s`;
-            exp = "1) v = v₀ + a×t\n2) Compute.";
+            exp = "1) v = v₀ + a×t\n2) Solve.";
             break;
           case "v0":
             var out = inputs.v - inputs.a*inputs.t;
             res = `v₀ = ${inputs.v} - ${inputs.a}×${inputs.t} = ${formatNumber(out)} m/s`;
-            exp = "1) v₀ = v - a×t\n2) Compute.";
+            exp = "1) v₀ = v - a×t\n2) Solve.";
             break;
           case "a":
             if(inputs.t===0) throw "t=0";
             var out = (inputs.v - inputs.v0)/inputs.t;
             res = `a = (${inputs.v}-${inputs.v0})/${inputs.t} = ${formatNumber(out)} m/s²`;
-            exp = "1) a=(v-v₀)/t\n2) Compute.";
+            exp = "1) a=(v-v₀)/t\n2) Solve.";
             break;
           case "t":
             if(inputs.a===0) throw "a=0";
             var out = (inputs.v - inputs.v0)/inputs.a;
             res = `t = (${inputs.v}-${inputs.v0})/${inputs.a} = ${formatNumber(out)} s`;
-            exp = "1) t=(v-v₀)/a\n2) Compute.";
+            exp = "1) t=(v-v₀)/a\n2) Solve.";
             break;
           case "d":
             var out = inputs.v0*inputs.t + 0.5*inputs.a*Math.pow(inputs.t,2);
             res = `d = ${inputs.v0}×${inputs.t} + 0.5×${inputs.a}×${inputs.t}² = ${formatNumber(out)} m`;
-            exp = "1) d=v₀t+½at²\n2) Compute.";
+            exp = "1) d=v₀t+½at²\n2) Solve.";
             break;
         }
       } catch(e){ res="Error: "+e; }
@@ -539,22 +539,22 @@
           case "ke":
             var out=0.5*vals[0]*Math.pow(vals[1],2);
             res=`KE=0.5×${vals[0]}×${vals[1]}²=${formatNumber(out)}J`;
-            exp="1) KE=½mv²\n2) Compute.";
+            exp="1) KE=½mv²\n2) Solve.";
             break;
           case "pe":
             var out=vals[0]*9.81*vals[1];
             res=`PE=${vals[0]}×9.81×${vals[1]}=${formatNumber(out)}J`;
-            exp="1) PE=mgh\n2) Compute.";
+            exp="1) PE=mgh\n2) Solve.";
             break;
           case "p":
             var out=vals[0]*vals[1];
             res=`p=${vals[0]}×${vals[1]}=${formatNumber(out)}kg·m/s`;
-            exp="1) p=mv\n2) Compute.";
+            exp="1) p=mv\n2) Solve.";
             break;
           case "impulse":
             var out=vals[0]*vals[1];
             res=`J=${vals[0]}×${vals[1]}=${formatNumber(out)}Ns`;
-            exp="1) J=FΔt\n2) Compute.";
+            exp="1) J=FΔt\n2) Solve.";
             break;
         }
       }catch(e){ res="Error:"+e; }
@@ -589,14 +589,14 @@
                 G =6.67430e-11,
                 F =G*m1*m2/Math.pow(r,2);
           res=`F=${G}×(${m1}×${m2})/(${r}²)=${formatNumber(F)}N`;
-          exp="1) F=Gm₁m₂/r²\n2) Compute.";
+          exp="1) F=Gm₁m₂/r²\n2) Solve.";
         } else {
           const Q=parseFloat(document.getElementById("fields-input-0").value),
                 r =parseFloat(document.getElementById("fields-input-1").value),
                 k =8.98755e9,
                 E =k*Q/Math.pow(r,2);
           res=`E=${k}×${Q}/(${r}²)=${formatNumber(E)}N/C`;
-          exp="1) E=kQ/r²\n2) Compute.";
+          exp="1) E=kQ/r²\n2) Solve.";
         }
       }catch(e){ res="Error:"+e; }
       document.getElementById("fieldsResult").innerText =
@@ -630,17 +630,17 @@
         if(sf==="v"){
           var out=vals[0]*vals[1];
           res=`v=${vals[0]}×${vals[1]}=${formatNumber(out)}m/s`;
-          exp="1) v=fλ\n2) Compute.";
+          exp="1) v=fλ\n2) Solve.";
         } else if(sf==="f"){
           if(vals[1]===0) throw "λ=0";
           var out=vals[0]/vals[1];
           res=`f=${vals[0]}/${vals[1]}=${formatNumber(out)}Hz`;
-          exp="1) f=v/λ\n2) Compute.";
+          exp="1) f=v/λ\n2) Solve.";
         } else {
           if(vals[1]===0) throw "f=0";
           var out=vals[0]/vals[1];
           res=`λ=${vals[0]}/${vals[1]}=${formatNumber(out)}m`;
-          exp="1) λ=v/f\n2) Compute.";
+          exp="1) λ=v/f\n2) Solve.";
         }
       }catch(e){ res="Error:"+e; }
       document.getElementById("wavesResult").innerText =
