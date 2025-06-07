@@ -2,7 +2,6 @@
 <!--
   Grade 12 Physics Solver
   This is a web application that helps students solve physics problems from different units.
-  It includes solvers, a unit converter, graphing, and practice/quiz mode.
 -->
 <html lang="en">
 <head>
@@ -724,37 +723,151 @@
       let res="", exp="";
       try {
         switch(solveFor) {
-          case "v":
+          case "v": {
             var out = inputs.v0 + inputs.a*inputs.t;
             res = `v = ${inputs.v0} + ${inputs.a}×${inputs.t} = ${formatNumber(out)} m/s`;
-            exp = "1) v = v₀ + a×t\n2) Solve.";
+            if (includeSteps) {
+              exp =
+`Step 1: Write the kinematic equation for final velocity:
+    v = v₀ + a·t
+
+Step 2: Identify the known values:
+    v₀ = ${inputs.v0} m/s (initial velocity)
+    a = ${inputs.a} m/s² (acceleration)
+    t = ${inputs.t} s (time)
+
+Step 3: Substitute the values into the equation:
+    v = ${inputs.v0} + (${inputs.a}) × (${inputs.t})
+
+Step 4: Calculate acceleration × time:
+    a·t = ${inputs.a} × ${inputs.t} = ${inputs.a*inputs.t}
+
+Step 5: Add initial velocity:
+    v = ${inputs.v0} + ${inputs.a*inputs.t} = ${out}
+
+Step 6: Final answer:
+    v = ${formatNumber(out)} m/s`;
+            }
             break;
-          case "v0":
+          }
+          case "v0": {
             var out = inputs.v - inputs.a*inputs.t;
             res = `v₀ = ${inputs.v} - ${inputs.a}×${inputs.t} = ${formatNumber(out)} m/s`;
-            exp = "1) v₀ = v - a×t\n2) Solve.";
+            if (includeSteps) {
+              exp =
+`Step 1: Rearrange the kinematic equation for initial velocity:
+    v₀ = v - a·t
+
+Step 2: Identify the known values:
+    v = ${inputs.v} m/s (final velocity)
+    a = ${inputs.a} m/s² (acceleration)
+    t = ${inputs.t} s (time)
+
+Step 3: Substitute the values:
+    v₀ = ${inputs.v} - (${inputs.a}) × (${inputs.t})
+
+Step 4: Calculate acceleration × time:
+    a·t = ${inputs.a} × ${inputs.t} = ${inputs.a*inputs.t}
+
+Step 5: Subtract from final velocity:
+    v₀ = ${inputs.v} - ${inputs.a*inputs.t} = ${out}
+
+Step 6: Final answer:
+    v₀ = ${formatNumber(out)} m/s`;
+            }
             break;
-          case "a":
+          }
+          case "a": {
             if(inputs.t===0) throw "t=0";
             var out = (inputs.v - inputs.v0)/inputs.t;
             res = `a = (${inputs.v}-${inputs.v0})/${inputs.t} = ${formatNumber(out)} m/s²`;
-            exp = "1) a=(v-v₀)/t\n2) Solve.";
+            if (includeSteps) {
+              exp =
+`Step 1: Rearrange the kinematic equation for acceleration:
+    a = (v - v₀) / t
+
+Step 2: Identify the known values:
+    v = ${inputs.v} m/s (final velocity)
+    v₀ = ${inputs.v0} m/s (initial velocity)
+    t = ${inputs.t} s (time)
+
+Step 3: Substitute the values:
+    a = (${inputs.v} - ${inputs.v0}) / ${inputs.t}
+
+Step 4: Calculate numerator:
+    v - v₀ = ${inputs.v} - ${inputs.v0} = ${inputs.v-inputs.v0}
+
+Step 5: Divide by time:
+    a = ${inputs.v-inputs.v0} / ${inputs.t} = ${out}
+
+Step 6: Final answer:
+    a = ${formatNumber(out)} m/s²`;
+            }
             break;
-          case "t":
+          }
+          case "t": {
             if(inputs.a===0) throw "a=0";
             var out = (inputs.v - inputs.v0)/inputs.a;
             res = `t = (${inputs.v}-${inputs.v0})/${inputs.a} = ${formatNumber(out)} s`;
-            exp = "1) t=(v-v₀)/a\n2) Solve.";
+            if (includeSteps) {
+              exp =
+`Step 1: Rearrange the kinematic equation for time:
+    t = (v - v₀) / a
+
+Step 2: Identify the known values:
+    v = ${inputs.v} m/s (final velocity)
+    v₀ = ${inputs.v0} m/s (initial velocity)
+    a = ${inputs.a} m/s² (acceleration)
+
+Step 3: Substitute the values:
+    t = (${inputs.v} - ${inputs.v0}) / ${inputs.a}
+
+Step 4: Calculate numerator:
+    v - v₀ = ${inputs.v} - ${inputs.v0} = ${inputs.v-inputs.v0}
+
+Step 5: Divide by acceleration:
+    t = ${inputs.v-inputs.v0} / ${inputs.a} = ${out}
+
+Step 6: Final answer:
+    t = ${formatNumber(out)} s`;
+            }
             break;
-          case "d":
+          }
+          case "d": {
             var out = inputs.v0*inputs.t + 0.5*inputs.a*Math.pow(inputs.t,2);
             res = `d = ${inputs.v0}×${inputs.t} + 0.5×${inputs.a}×${inputs.t}² = ${formatNumber(out)} m`;
-            exp = "1) d=v₀t+½at²\n2) Solve.";
+            if (includeSteps) {
+              exp =
+`Step 1: Write the kinematic equation for displacement:
+    d = v₀·t + ½·a·t²
+
+Step 2: Identify the known values:
+    v₀ = ${inputs.v0} m/s (initial velocity)
+    a = ${inputs.a} m/s² (acceleration)
+    t = ${inputs.t} s (time)
+
+Step 3: Substitute the values:
+    d = (${inputs.v0}) × (${inputs.t}) + 0.5 × (${inputs.a}) × (${inputs.t})²
+
+Step 4: Calculate v₀·t:
+    v₀·t = ${inputs.v0} × ${inputs.t} = ${inputs.v0*inputs.t}
+
+Step 5: Calculate 0.5·a·t²:
+    t² = ${inputs.t}² = ${Math.pow(inputs.t,2)}
+    0.5·a·t² = 0.5 × ${inputs.a} × ${Math.pow(inputs.t,2)} = ${0.5*inputs.a*Math.pow(inputs.t,2)}
+
+Step 6: Add both terms:
+    d = ${inputs.v0*inputs.t} + ${0.5*inputs.a*Math.pow(inputs.t,2)} = ${out}
+
+Step 7: Final answer:
+    d = ${formatNumber(out)} m`;
+            }
             break;
+          }
         }
       } catch(e){ res="Error: "+e; }
       document.getElementById("kinResult").innerText =
-        includeSteps ? res+"\n\n"+exp : res;
+        includeSteps && exp ? res+"\n\n"+exp : res;
     }
     function toggleDontKnow() {
       const sec = document.getElementById("dont-know-section");
@@ -773,23 +886,73 @@
       if(missing.length!==1){
         document.getElementById("dk-result").innerText="Leave one blank."; return;
       }
-      let ans=NaN, x=missing[0];
+      let ans=NaN, x=missing[0], exp="";
       try{
         switch(x){
           case "v":
-            if(!isNaN(v0)&&!isNaN(a)&&!isNaN(t)) ans=v0+a*t;
-            else if(!isNaN(d)&&!isNaN(v0)&&!isNaN(a)) ans=Math.sqrt(v0*v0+2*a*d);
+            if(!isNaN(v0)&&!isNaN(a)&&!isNaN(t)) {
+              ans=v0+a*t;
+              if(includeSteps) exp =
+`Step 1: Use v = v₀ + a·t
+Step 2: Substitute: v = ${v0} + ${a}×${t}
+Step 3: Calculate: v = ${v0+a*t}`;
+            }
+            else if(!isNaN(d)&&!isNaN(v0)&&!isNaN(a)) {
+              ans=Math.sqrt(v0*v0+2*a*d);
+              if(includeSteps) exp =
+`Step 1: Use v² = v₀² + 2a·d
+Step 2: Substitute: v² = ${v0}² + 2×${a}×${d}
+Step 3: Calculate: v² = ${v0*v0} + ${2*a*d} = ${v0*v0+2*a*d}
+Step 4: Take square root: v = √${v0*v0+2*a*d} = ${ans}`;
+            }
             break;
           case "v0":
-            if(!isNaN(v)&&!isNaN(a)&&!isNaN(t)) ans=v - a*t;
-            else if(!isNaN(v)&&!isNaN(d)&&!isNaN(a)) ans=Math.sqrt(v*v-2*a*d);
+            if(!isNaN(v)&&!isNaN(a)&&!isNaN(t)) {
+              ans=v - a*t;
+              if(includeSteps) exp =
+`Step 1: Use v₀ = v - a·t
+Step 2: Substitute: v₀ = ${v} - ${a}×${t}
+Step 3: Calculate: v₀ = ${v-a*t}`;
+            }
+            else if(!isNaN(v)&&!isNaN(d)&&!isNaN(a)) {
+              ans=Math.sqrt(v*v-2*a*d);
+              if(includeSteps) exp =
+`Step 1: Use v² = v₀² + 2a·d, rearrange for v₀
+Step 2: v₀² = v² - 2a·d
+Step 3: Substitute: v₀² = ${v}² - 2×${a}×${d}
+Step 4: Calculate: v₀² = ${v*v} - ${2*a*d} = ${v*v-2*a*d}
+Step 5: Take square root: v₀ = √${v*v-2*a*d} = ${ans}`;
+            }
             break;
           case "a":
-            if(!isNaN(v)&&!isNaN(v0)&&!isNaN(t)&&t!==0) ans=(v-v0)/t;
-            else if(!isNaN(v)&&!isNaN(v0)&&!isNaN(d)&&d!==0) ans=(v*v-v0*v0)/(2*d);
+            if(!isNaN(v)&&!isNaN(v0)&&!isNaN(t)&&t!==0) {
+              ans=(v-v0)/t;
+              if(includeSteps) exp =
+`Step 1: Use a = (v - v₀) / t
+Step 2: Substitute: a = (${v} - ${v0}) / ${t}
+Step 3: Calculate numerator: ${v-v0}
+Step 4: Divide: a = ${v-v0} / ${t} = ${ans}`;
+            }
+            else if(!isNaN(v)&&!isNaN(v0)&&!isNaN(d)&&d!==0) {
+              ans=(v*v-v0*v0)/(2*d);
+              if(includeSteps) exp =
+`Step 1: Use v² = v₀² + 2a·d, rearrange for a
+Step 2: a = (v² - v₀²) / (2d)
+Step 3: Substitute: a = (${v}² - ${v0}²) / (2×${d})
+Step 4: Calculate numerator: ${v*v} - ${v0*v0} = ${v*v-v0*v0}
+Step 5: Calculate denominator: 2×${d} = ${2*d}
+Step 6: Divide: a = ${v*v-v0*v0} / ${2*d} = ${ans}`;
+            }
             break;
           case "t":
-            if(!isNaN(v)&&!isNaN(v0)&&!isNaN(a)&&a!==0) ans=(v-v0)/a;
+            if(!isNaN(v)&&!isNaN(v0)&&!isNaN(a)&&a!==0) {
+              ans=(v-v0)/a;
+              if(includeSteps) exp =
+`Step 1: Use t = (v - v₀) / a
+Step 2: Substitute: t = (${v} - ${v0}) / ${a}
+Step 3: Calculate numerator: ${v-v0}
+Step 4: Divide: t = ${v-v0} / ${a} = ${ans}`;
+            }
             else {
               const A=0.5*a,B=v0,C=-d;
               const disc=B*B-4*A*C;
@@ -797,16 +960,41 @@
               const t1=(-B+Math.sqrt(disc))/(2*A),
                     t2=(-B-Math.sqrt(disc))/(2*A);
               ans=(t1>=0?t1:t2);
+              if(includeSteps) exp =
+`Step 1: Use d = v₀·t + ½·a·t² (quadratic in t)
+Step 2: Rearranged: ½a·t² + v₀·t - d = 0
+Step 3: Use quadratic formula: t = [-v₀ ± √(v₀² - 4·½a·(-d))] / (2·½a)
+Step 4: Substitute: a = ${a}, v₀ = ${v0}, d = ${d}
+Step 5: Discriminant: ${v0}² - 4×${0.5*a}×${-d} = ${disc}
+Step 6: Roots: t₁ = ${t1}, t₂ = ${t2}
+Step 7: Choose positive root: t = ${ans}`;
             }
             break;
           case "d":
-            if(!isNaN(v0)&&!isNaN(a)&&!isNaN(t)) ans=v0*t+0.5*a*t*t;
-            else if(!isNaN(v)&&!isNaN(v0)&&!isNaN(a)) ans=(v*v-v0*v0)/(2*a);
+            if(!isNaN(v0)&&!isNaN(a)&&!isNaN(t)) {
+              ans=v0*t+0.5*a*t*t;
+              if(includeSteps) exp =
+`Step 1: Use d = v₀·t + ½·a·t²
+Step 2: Substitute: d = ${v0}×${t} + 0.5×${a}×${t}²
+Step 3: Calculate v₀·t: ${v0*t}
+Step 4: Calculate 0.5·a·t²: 0.5×${a}×${t*t} = ${0.5*a*t*t}
+Step 5: Add: d = ${v0*t} + ${0.5*a*t*t} = ${ans}`;
+            }
+            else if(!isNaN(v)&&!isNaN(v0)&&!isNaN(a)) {
+              ans=(v*v-v0*v0)/(2*a);
+              if(includeSteps) exp =
+`Step 1: Use v² = v₀² + 2a·d, rearrange for d
+Step 2: d = (v² - v₀²) / (2a)
+Step 3: Substitute: d = (${v}² - ${v0}²) / (2×${a})
+Step 4: Calculate numerator: ${v*v} - ${v0*v0} = ${v*v-v0*v0}
+Step 5: Calculate denominator: 2×${a} = ${2*a}
+Step 6: Divide: d = ${v*v-v0*v0} / ${2*a} = ${ans}`;
+            }
             break;
         }
       }catch(e){ document.getElementById("dk-result").innerText="Error:"+e; return; }
       const out=isNaN(ans)?"Inconsistent data.":`Solved ${x} = ${formatNumber(ans)}`;
-      document.getElementById("dk-result").innerText = out;
+      document.getElementById("dk-result").innerText = includeSteps && exp ? out + "\n\n" + exp : out;
     }
     ///////////////////////////////
     // ENERGY & MOMENTUM SOLVER  //
@@ -832,30 +1020,106 @@
       let res="",exp="";
       try{
         switch(sf){
-          case "ke":
+          case "ke": {
             var out=0.5*vals[0]*Math.pow(vals[1],2);
             res=`KE=0.5×${vals[0]}×${vals[1]}²=${formatNumber(out)}J`;
-            exp="1) KE=½mv²\n2) Solve.";
+            if (includeSteps) {
+              exp =
+`Step 1: Write the kinetic energy formula:
+    KE = ½·m·v²
+
+Step 2: Identify the known values:
+    m = ${vals[0]} kg (mass)
+    v = ${vals[1]} m/s (velocity)
+
+Step 3: Substitute the values:
+    KE = 0.5 × ${vals[0]} × (${vals[1]})²
+
+Step 4: Calculate v²:
+    (${vals[1]})² = ${Math.pow(vals[1],2)}
+
+Step 5: Multiply by mass and 0.5:
+    KE = 0.5 × ${vals[0]} × ${Math.pow(vals[1],2)} = ${0.5*vals[0]*Math.pow(vals[1],2)}
+
+Step 6: Final answer:
+    KE = ${formatNumber(out)} J`;
+            }
             break;
-          case "pe":
+          }
+          case "pe": {
             var out=vals[0]*9.81*vals[1];
             res=`PE=${vals[0]}×9.81×${vals[1]}=${formatNumber(out)}J`;
-            exp="1) PE=mgh\n2) Solve.";
+            if (includeSteps) {
+              exp =
+`Step 1: Write the gravitational potential energy formula:
+    PE = m·g·h
+
+Step 2: Identify the known values:
+    m = ${vals[0]} kg (mass)
+    g = 9.81 m/s² (acceleration due to gravity)
+    h = ${vals[1]} m (height)
+
+Step 3: Substitute the values:
+    PE = ${vals[0]} × 9.81 × ${vals[1]}
+
+Step 4: Multiply all terms:
+    PE = ${vals[0]*9.81*vals[1]}
+
+Step 5: Final answer:
+    PE = ${formatNumber(out)} J`;
+            }
             break;
-          case "p":
+          }
+          case "p": {
             var out=vals[0]*vals[1];
             res=`p=${vals[0]}×${vals[1]}=${formatNumber(out)}kg·m/s`;
-            exp="1) p=mv\n2) Solve.";
+            if (includeSteps) {
+              exp =
+`Step 1: Write the momentum formula:
+    p = m·v
+
+Step 2: Identify the known values:
+    m = ${vals[0]} kg (mass)
+    v = ${vals[1]} m/s (velocity)
+
+Step 3: Substitute the values:
+    p = ${vals[0]} × ${vals[1]}
+
+Step 4: Multiply:
+    p = ${out}
+
+Step 5: Final answer:
+    p = ${formatNumber(out)} kg·m/s`;
+            }
             break;
-          case "impulse":
+          }
+          case "impulse": {
             var out=vals[0]*vals[1];
             res=`J=${vals[0]}×${vals[1]}=${formatNumber(out)}Ns`;
-            exp="1) J=FΔt\n2) Solve.";
+            if (includeSteps) {
+              exp =
+`Step 1: Write the impulse formula:
+    J = F·Δt
+
+Step 2: Identify the known values:
+    F = ${vals[0]} N (force)
+    Δt = ${vals[1]} s (time interval)
+
+Step 3: Substitute the values:
+    J = ${vals[0]} × ${vals[1]}
+
+Step 4: Multiply:
+    J = ${out}
+
+Step 5: Final answer:
+    J = ${formatNumber(out)} Ns`;
+            }
             break;
+          }
         }
       }catch(e){ res="Error:"+e; }
       document.getElementById("energyResult").innerText =
-        includeSteps? res+"\n\n"+exp:res;
+        includeSteps && exp ? res+"\n\n"+exp : res;
     }
     ///////////////////////
     // FIELDS SOLVER     //
@@ -884,18 +1148,67 @@
                 G =6.67430e-11,
                 F =G*m1*m2/Math.pow(r,2);
           res=`F=${G}×(${m1}×${m2})/(${r}²)=${formatNumber(F)}N`;
-          exp="1) F=Gm₁m₂/r²\n2) Solve.";
+          if (includeSteps) {
+            exp =
+`Step 1: Write Newton's law of universal gravitation:
+    F = G·m₁·m₂ / r²
+
+Step 2: Identify the known values:
+    G = 6.67430×10⁻¹¹ N·m²/kg² (gravitational constant)
+    m₁ = ${m1} kg
+    m₂ = ${m2} kg
+    r = ${r} m (distance)
+
+Step 3: Substitute the values:
+    F = 6.67430e-11 × ${m1} × ${m2} / (${r})²
+
+Step 4: Calculate numerator:
+    6.67430e-11 × ${m1} × ${m2} = ${G*m1*m2}
+
+Step 5: Calculate denominator:
+    (${r})² = ${Math.pow(r,2)}
+
+Step 6: Divide numerator by denominator:
+    F = ${G*m1*m2} / ${Math.pow(r,2)} = ${F}
+
+Step 7: Final answer:
+    F = ${formatNumber(F)} N`;
+          }
         } else {
           const Q=parseFloat(document.getElementById("fields-input-0").value),
                 r =parseFloat(document.getElementById("fields-input-1").value),
                 k =8.98755e9,
                 E =k*Q/Math.pow(r,2);
           res=`E=${k}×${Q}/(${r}²)=${formatNumber(E)}N/C`;
-          exp="1) E=kQ/r²\n2) Solve.";
+          if (includeSteps) {
+            exp =
+`Step 1: Write the electric field formula for a point charge:
+    E = k·Q / r²
+
+Step 2: Identify the known values:
+    k = 8.98755×10⁹ N·m²/C² (Coulomb's constant)
+    Q = ${Q} C (charge)
+    r = ${r} m (distance)
+
+Step 3: Substitute the values:
+    E = 8.98755e9 × ${Q} / (${r})²
+
+Step 4: Calculate denominator:
+    (${r})² = ${Math.pow(r,2)}
+
+Step 5: Calculate numerator:
+    8.98755e9 × ${Q} = ${k*Q}
+
+Step 6: Divide numerator by denominator:
+    E = ${k*Q} / ${Math.pow(r,2)} = ${E}
+
+Step 7: Final answer:
+    E = ${formatNumber(E)} N/C`;
+          }
         }
       }catch(e){ res="Error:"+e; }
       document.getElementById("fieldsResult").innerText =
-        includeSteps? res+"\n\n"+exp:res;
+        includeSteps && exp ? res+"\n\n"+exp : res;
     }
     ///////////////////////
     // WAVES SOLVER      //
@@ -924,21 +1237,72 @@
         if(sf==="v"){
           var out=vals[0]*vals[1];
           res=`v=${vals[0]}×${vals[1]}=${formatNumber(out)}m/s`;
-          exp="1) v=fλ\n2) Solve.";
+          if (includeSteps) {
+            exp =
+`Step 1: Write the wave speed formula:
+    v = f·λ
+
+Step 2: Identify the known values:
+    f = ${vals[0]} Hz (frequency)
+    λ = ${vals[1]} m (wavelength)
+
+Step 3: Substitute the values:
+    v = ${vals[0]} × ${vals[1]}
+
+Step 4: Multiply:
+    v = ${out}
+
+Step 5: Final answer:
+    v = ${formatNumber(out)} m/s`;
+          }
         } else if(sf==="f"){
           if(vals[1]===0) throw "λ=0";
           var out=vals[0]/vals[1];
           res=`f=${vals[0]}/${vals[1]}=${formatNumber(out)}Hz`;
-          exp="1) f=v/λ\n2) Solve.";
+          if (includeSteps) {
+            exp =
+`Step 1: Rearrange the wave speed formula for frequency:
+    f = v / λ
+
+Step 2: Identify the known values:
+    v = ${vals[0]} m/s (wave speed)
+    λ = ${vals[1]} m (wavelength)
+
+Step 3: Substitute the values:
+    f = ${vals[0]} / ${vals[1]}
+
+Step 4: Divide:
+    f = ${out}
+
+Step 5: Final answer:
+    f = ${formatNumber(out)} Hz`;
+          }
         } else {
           if(vals[1]===0) throw "f=0";
           var out=vals[0]/vals[1];
           res=`λ=${vals[0]}/${vals[1]}=${formatNumber(out)}m`;
-          exp="1) λ=v/f\n2) Solve.";
+          if (includeSteps) {
+            exp =
+`Step 1: Rearrange the wave speed formula for wavelength:
+    λ = v / f
+
+Step 2: Identify the known values:
+    v = ${vals[0]} m/s (wave speed)
+    f = ${vals[1]} Hz (frequency)
+
+Step 3: Substitute the values:
+    λ = ${vals[0]} / ${vals[1]}
+
+Step 4: Divide:
+    λ = ${out}
+
+Step 5: Final answer:
+    λ = ${formatNumber(out)} m`;
+          }
         }
       }catch(e){ res="Error:"+e; }
       document.getElementById("wavesResult").innerText =
-        includeSteps? res+"\n\n"+exp:res;
+        includeSteps && exp ? res+"\n\n"+exp : res;
     }
     /////////////////////////////
     // MODERN PHYSICS SOLVER   //
@@ -963,19 +1327,58 @@
           const m=parseFloat(document.getElementById("modern-input-0").value),
                 v=parseFloat(document.getElementById("modern-input-1").value);
           if(v>=c) throw "v≥c";
-          const γ=1/Math.sqrt(1-Math.pow(v/c,2)),
-                K=(γ-1)*m*c*c;
-          res=`K=(${formatNumber(γ)}-1)×${m}×c²=${formatNumber(K)}J`;
-          exp="1) γ=1/√(1-v²/c²)\n2)K=(γ-1)mc²";
+          const v2 = Math.pow(v,2);
+          const c2 = Math.pow(c,2);
+          const gamma = 1/Math.sqrt(1-v2/c2);
+          const K = (gamma-1)*m*c2;
+          res=`K=(${formatNumber(gamma)}-1)×${m}×c²=${formatNumber(K)}J`;
+          if (includeSteps) {
+            exp =
+`Step 1: Write the relativistic kinetic energy formula:
+    K = (γ - 1)·m·c²
+
+Step 2: Calculate γ (Lorentz factor):
+    γ = 1 / √(1 - v² / c²)
+      = 1 / √(1 - (${v}² / ${c}²))
+      = 1 / √(1 - (${v2} / ${c2}))
+      = 1 / √(${1 - v2 / c2})
+      = ${gamma}
+
+Step 3: Subtract 1 from γ:
+    γ - 1 = ${gamma} - 1 = ${gamma-1}
+
+Step 4: Multiply by mass and c²:
+    (${gamma-1}) × ${m} × (${c}²) = (${gamma-1}) × ${m} × ${c2} = ${K}
+
+Step 5: Final answer:
+    K = ${formatNumber(K)} J`;
+          }
         } else {
           const m=parseFloat(document.getElementById("modern-input-0").value),
-                E=m*c*c;
+                c2 = Math.pow(c,2),
+                E=m*c2;
           res=`E=${m}×c²=${formatNumber(E)}J`;
-          exp="1)E=mc²";
+          if (includeSteps) {
+            exp =
+`Step 1: Write the rest energy formula:
+    E = m·c²
+
+Step 2: Substitute the known values:
+    E = ${m} × (${c})²
+
+Step 3: Calculate c²:
+    c² = (${c}) × (${c}) = ${c2}
+
+Step 4: Multiply by mass:
+    E = ${m} × ${c2} = ${E}
+
+Step 5: Final answer:
+    E = ${formatNumber(E)} J`;
+          }
         }
       }catch(e){ res="Error:"+e; }
       document.getElementById("modernResult").innerText =
-        includeSteps? res+"\n\n"+exp:res;
+        includeSteps && exp ? res+"\n\n"+exp : res;
     }
     ///////////////////////
     // GRAPHING SECTION  //
@@ -1024,6 +1427,7 @@
         }}
       });
     }
+
     ///////////////////////
     // UNIT CONVERTER    //
     ///////////////////////
