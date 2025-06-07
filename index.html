@@ -81,25 +81,28 @@
       box-shadow: 0 2px 8px 0 rgba(30,64,175,0.08);
       transition: background var(--transition), color var(--transition);
     }
-    body.dark #darkModeToggle {
-      background: rgba(30,64,175,0.25);
-      color: #f4f4f5;
+    body.dark {
+    background: var(--bg-dark);
+    color: var(--text-light);
     }
-    /* Main content area */
+    html, body {
+    height: 120%;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+    font-family: 'Inter', 'Roboto', Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    transition: background var(--transition), color var(--transition);
+    }
+
+    body.dark, body.dark html {
+    background: var(--bg-dark) !important;
+    color: var(--text-light) !important;
+    }
+
     main {
-      max-width: 540px;
-      margin: 2.5rem auto;
-      background: var(--surface);
-      border-radius: var(--radius);
-      padding: 2.5rem 2rem;
-      box-shadow: var(--shadow);
-      position: relative;
-      overflow: hidden;
-      transition: background var(--transition), color var(--transition);
-    }
-    body.dark main {
-      background: var(--surface-dark);
-      color: var(--text-light);
+    min-height: 80vh;
     }
     /* Homepage welcome section */
     #homepage {
